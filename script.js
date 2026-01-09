@@ -1,24 +1,31 @@
 const canvas = document.getElementById("game");
 const ctx = canvas.getContext("2d");
 const scoreText = document.getElementById("score");
+const finalScoreText = document.getElementById("finalScore");
 const gameOverScreen = document.getElementById("gameOver");
 
 const gridSize = 20;
+const speed = 100;
 
-let snake, direction, food, score, gameLoop;
-let gameRunning = true;
+let snake;
+let direction;
+let food;
+let score;
+let gameLoop;
+let gameRunning = false;
 
-function initGame() {
+function startGame() {
     snake = [{ x: 200, y: 200 }];
     direction = { x: gridSize, y: 0 };
     food = randomFood();
     score = 0;
     gameRunning = true;
+
     scoreText.textContent = "Score: 0";
     gameOverScreen.classList.add("hidden");
 
     clearInterval(gameLoop);
-    gameLoop = setInterval(draw, 100);
+    gameLoop = setInterval(gameTick, speed);
 }
 
 function randomFood() {
@@ -28,20 +35,11 @@ function randomFood() {
     };
 }
 
-function draw() {
-    ctx.clearRect(0, 0, canvas.width, canvas.height);
-
-    // Draw snake
-    ctx.fillStyle = "lime";
-    snake.forEach(part =>
-        ctx.fillRect(part.x, part.y, gridSize, gridSize)
-    );
-
-    // Draw food
-    ctx.fillStyle = "red";
-    ctx.fillRect(food.x, food.y, gridSize, gridSize);
+function gameTick() {
+    if (!gameRunning) return;
 
     moveSnake();
+    drawGame();
 }
 
 function moveSnake() {
@@ -50,11 +48,10 @@ function moveSnake() {
         y: snake[0].y + direction.y
     };
 
-    // Wall collision
+    // Wall collision ONLY
     if (
         head.x < 0 || head.x >= canvas.width ||
-        head.y < 0 || head.y >= canvas.height ||
-        snake.some(part => part.x === head.x && part.y === head.y)
+        head.y < 0 || head.y >= canvas.height
     ) {
         endGame();
         return;
@@ -72,14 +69,29 @@ function moveSnake() {
     }
 }
 
+function drawGame() {
+    ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+    // Snake
+    ctx.fillStyle = "lime";
+    snake.forEach(part =>
+        ctx.fillRect(part.x, part.y, gridSize, gridSize)
+    );
+
+    // Food
+    ctx.fillStyle = "red";
+    ctx.fillRect(food.x, food.y, gridSize, gridSize);
+}
+
 function endGame() {
     gameRunning = false;
     clearInterval(gameLoop);
+    finalScoreText.textContent = "Final Score: " + score;
     gameOverScreen.classList.remove("hidden");
 }
 
 function restartGame() {
-    initGame();
+    startGame();
 }
 
 document.addEventListener("keydown", e => {
@@ -87,13 +99,16 @@ document.addEventListener("keydown", e => {
 
     if (e.key === "ArrowUp" && direction.y === 0)
         direction = { x: 0, y: -gridSize };
+
     if (e.key === "ArrowDown" && direction.y === 0)
         direction = { x: 0, y: gridSize };
+
     if (e.key === "ArrowLeft" && direction.x === 0)
         direction = { x: -gridSize, y: 0 };
+
     if (e.key === "ArrowRight" && direction.x === 0)
         direction = { x: gridSize, y: 0 };
 });
 
-// Start game
-initGame();
+// Start game when page loads
+startGame();
