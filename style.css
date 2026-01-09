@@ -8,5 +8,23 @@ body {
 canvas {
     background-color: black;
     border: 3px solid lime;
+    display: block;
+    margin: 0 auto;
 }
 
+#gameOver {
+    margin-top: 20px;
+}
+
+.hidden {
+    display: none;
+}
+
+button {
+    padding: 10px 20px;
+    font-size: 18px;
+    cursor: pointer;
+    background-color: lime;
+    border: none;
+    border-radius: 5px;
+}
