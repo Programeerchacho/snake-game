@@ -37,7 +37,6 @@ function randomFood() {
 
 function gameTick() {
     if (!gameRunning) return;
-
     moveSnake();
     drawGame();
 }
@@ -72,15 +71,60 @@ function moveSnake() {
 function drawGame() {
     ctx.clearRect(0, 0, canvas.width, canvas.height);
 
-    // Snake
-    ctx.fillStyle = "lime";
-    snake.forEach(part =>
-        ctx.fillRect(part.x, part.y, gridSize, gridSize)
-    );
-
-    // Food
+    // Draw food
     ctx.fillStyle = "red";
     ctx.fillRect(food.x, food.y, gridSize, gridSize);
+
+    // Draw snake body
+    ctx.fillStyle = "lime";
+    snake.forEach(part => {
+        ctx.fillRect(part.x, part.y, gridSize, gridSize);
+    });
+
+    drawEyesAndTongue();
+}
+
+function drawEyesAndTongue() {
+    const head = snake[0];
+    const centerX = head.x + gridSize / 2;
+    const centerY = head.y + gridSize / 2;
+
+    // 🧿 Eyes
+    ctx.fillStyle = "black";
+
+    let eyeOffsetX = 0;
+    let eyeOffsetY = 0;
+
+    if (direction.x !== 0) {
+        eyeOffsetY = 5;
+        ctx.beginPath();
+        ctx.arc(centerX + direction.x / 2, centerY - eyeOffsetY, 2, 0, Math.PI * 2);
+        ctx.arc(centerX + direction.x / 2, centerY + eyeOffsetY, 2, 0, Math.PI * 2);
+        ctx.fill();
+    } else {
+        eyeOffsetX = 5;
+        ctx.beginPath();
+        ctx.arc(centerX - eyeOffsetX, centerY + direction.y / 2, 2, 0, Math.PI * 2);
+        ctx.arc(centerX + eyeOffsetX, centerY + direction.y / 2, 2, 0, Math.PI * 2);
+        ctx.fill();
+    }
+
+    // 👅 Tongue when close to apple (2 blocks)
+    const distance =
+        Math.abs(head.x - food.x) / gridSize +
+        Math.abs(head.y - food.y) / gridSize;
+
+    if (distance <= 2) {
+        ctx.strokeStyle = "red";
+        ctx.lineWidth = 2;
+        ctx.beginPath();
+        ctx.moveTo(centerX, centerY);
+        ctx.lineTo(
+            centerX + direction.x * 0.8,
+            centerY + direction.y * 0.8
+        );
+        ctx.stroke();
+    }
 }
 
 function endGame() {
@@ -110,5 +154,5 @@ document.addEventListener("keydown", e => {
         direction = { x: gridSize, y: 0 };
 });
 
-// Start game when page loads
+// Start game
 startGame();
