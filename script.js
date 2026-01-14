@@ -53,7 +53,7 @@ function moveSnake() {
     let headX = snake[0].x + direction.x;
     let headY = snake[0].y + direction.y;
 
-    // Wrap
+    // Wrap around walls
     if (headX < 0) headX = canvas.width - gridSize;
     if (headX >= canvas.width) headX = 0;
     if (headY < 0) headY = canvas.height - gridSize;
@@ -63,7 +63,7 @@ function moveSnake() {
 
     // Self-collision
     if (snake.some(p => p.x === head.x && p.y === head.y)) {
-        endGame(false);
+        endGame(false); // Game Over
         return;
     }
 
@@ -77,7 +77,7 @@ function moveSnake() {
         // Win condition
         const maxLength = (canvas.width / gridSize) * (canvas.height / gridSize);
         if (snake.length === maxLength) {
-            endGame(true);
+            endGame(true); // You Win
             return;
         }
 
@@ -143,7 +143,7 @@ function endGame(win) {
     gameRunning = false;
     clearInterval(gameLoop);
     finalScoreText.textContent = win ? `You Win! Score: ${score}` : `Game Over! Score: ${score}`;
-    playAgainBtn.style.display = win ? "inline-block" : "none";
+    playAgainBtn.style.display = "inline-block"; // always show Play Again
     gameOverScreen.style.display = "block";
 }
 
@@ -160,5 +160,5 @@ document.addEventListener("keydown", e => {
     if (e.key === "ArrowRight" && direction.x === 0) direction = { x: gridSize, y: 0 };
 });
 
-// Start the game
+// Start game
 startGame();
