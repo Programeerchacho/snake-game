@@ -6,8 +6,8 @@ body {
 }
 
 canvas {
-    background-color: black;
-    border: 3px solid lime;
+    background-color: #2e7d32; /* grass green */
+    border: 3px solid #1b5e20;
     display: block;
     margin: 0 auto;
 }
