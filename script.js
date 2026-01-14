@@ -41,7 +41,6 @@ function randomFood() {
     do {
         x = Math.floor(Math.random() * (canvas.width / gridSize)) * gridSize;
         y = Math.floor(Math.random() * (canvas.height / gridSize)) * gridSize;
-        // avoid spawning food on snake
     } while (snake.some(part => part.x === x && part.y === y));
     return { x, y };
 }
@@ -56,11 +55,11 @@ function moveSnake() {
     let headX = snake[0].x + direction.x;
     let headY = snake[0].y + direction.y;
 
-    // Wrap around horizontally
+    // Wrap horizontally
     if (headX < 0) headX = canvas.width - gridSize;
     if (headX >= canvas.width) headX = 0;
 
-    // Wrap around vertically
+    // Wrap vertically
     if (headY < 0) headY = canvas.height - gridSize;
     if (headY >= canvas.height) headY = 0;
 
@@ -68,7 +67,7 @@ function moveSnake() {
 
     // Self-collision
     if (snake.some(part => part.x === head.x && part.y === head.y)) {
-        endGame(false); // lost
+        endGame(false);
         return;
     }
 
@@ -78,11 +77,13 @@ function moveSnake() {
     if (head.x === food.x && head.y === food.y) {
         score++;
         scoreText.textContent = "Score: " + score;
-        // Check if board is full
+
+        // Check for win
         if (snake.length === (canvas.width / gridSize) * (canvas.height / gridSize)) {
-            endGame(true); // win
+            endGame(true);
             return;
         }
+
         food = randomFood();
     } else {
         snake.pop();
@@ -90,7 +91,7 @@ function moveSnake() {
 }
 
 function drawGame() {
-    // Background
+    // Green background
     ctx.fillStyle = "#3fa34d";
     ctx.fillRect(0, 0, canvas.width, canvas.height);
 
@@ -113,7 +114,6 @@ function drawEyesAndTongue() {
     // Eyes
     ctx.fillStyle = "black";
     ctx.beginPath();
-
     if (direction.x !== 0) {
         ctx.arc(centerX + direction.x / 2, centerY - 5, 2, 0, Math.PI * 2);
         ctx.arc(centerX + direction.x / 2, centerY + 5, 2, 0, Math.PI * 2);
@@ -149,7 +149,13 @@ function drawEyesAndTongue() {
 function endGame(win) {
     gameRunning = false;
     clearInterval(gameLoop);
-    finalScoreText.textContent = win ? "You Win! Score: " + score : "Game Over! Score: " + score;
+    if (win) {
+        finalScoreText.textContent = "You Win! Score: " + score;
+        gameOverScreen.querySelector("button").style.display = "inline-block"; // show Play Again
+    } else {
+        finalScoreText.textContent = "Game Over! Score: " + score;
+        gameOverScreen.querySelector("button").style.display = "none"; // hide button
+    }
     gameOverScreen.classList.remove("hidden");
 }
 
@@ -157,6 +163,7 @@ function restartGame() {
     startGame();
 }
 
+// Keyboard input
 document.addEventListener("keydown", e => {
     if (!gameRunning) return;
 
