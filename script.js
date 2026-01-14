@@ -48,10 +48,10 @@ function randomFood() {
     };
 }
 
-/* 🌱 Create grass particles */
+/* 🌱 Create grass */
 function createGrass() {
     grass = [];
-    for (let i = 0; i < 120; i++) {
+    for (let i = 0; i < 150; i++) {
         grass.push({
             x: Math.random() * canvas.width,
             y: Math.random() * canvas.height,
@@ -73,21 +73,13 @@ function moveSnake() {
         y: snake[0].y + direction.y
     };
 
-    // Wall collision
+    // 🚨 WALL COLLISION ONLY
     if (
         head.x < 0 || head.x >= canvas.width ||
         head.y < 0 || head.y >= canvas.height
     ) {
         endGame();
         return;
-    }
-
-    // Self collision
-    for (let i = 0; i < snake.length; i++) {
-        if (snake[i].x === head.x && snake[i].y === head.y) {
-            endGame();
-            return;
-        }
     }
 
     snake.unshift(head);
@@ -103,15 +95,17 @@ function moveSnake() {
 }
 
 function drawGame() {
-    ctx.clearRect(0, 0, canvas.width, canvas.height);
+    // 🟢 Paint green background manually
+    ctx.fillStyle = "#3fa34d";
+    ctx.fillRect(0, 0, canvas.width, canvas.height);
 
     drawGrass();
 
-    // Food
+    // 🍎 Food
     ctx.fillStyle = "red";
     ctx.fillRect(food.x, food.y, gridSize, gridSize);
 
-    // Snake body
+    // 🐍 Snake
     ctx.fillStyle = "lime";
     snake.forEach(part =>
         ctx.fillRect(part.x, part.y, gridSize, gridSize)
@@ -120,7 +114,7 @@ function drawGame() {
     drawEyesAndTongue();
 }
 
-/* 🌿 Draw animated grass */
+/* 🌿 Grass animation */
 function drawGrass() {
     ctx.strokeStyle = "#1b5e20";
     ctx.lineWidth = 1;
@@ -143,7 +137,7 @@ function drawEyesAndTongue() {
     const centerX = head.x + gridSize / 2;
     const centerY = head.y + gridSize / 2;
 
-    // Eyes
+    // 👀 Eyes
     ctx.fillStyle = "black";
     ctx.beginPath();
 
@@ -161,7 +155,7 @@ function drawEyesAndTongue() {
         Math.abs(head.x - food.x) / gridSize +
         Math.abs(head.y - food.y) / gridSize;
 
-    // Animated tongue
+    // 👅 Animated tongue
     if (distance <= 2) {
         tongueTimer++;
 
@@ -213,5 +207,5 @@ document.addEventListener("keydown", e => {
         direction = { x: gridSize, y: 0 };
 });
 
-// Start game
+// ▶ Start game
 startGame();
